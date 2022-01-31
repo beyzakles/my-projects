@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Project-101
+Resources:
+  Myinstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0a8b4cd432b1c3063
+      InstanceType: t2.micro
+      KeyName: firstkey
+      SecurityGroups:
+        - !Ref mysecgroup
+      Tags:
+        - Key: Name
+          Value: cfn-template
+      UserData: 
+        Fn::Base64:
+          !Sub | 
+            #! /bin/bash
+            yum update -y
+            yum install httpd -y
+            systemctl start httpd
+            systemctl enable httpd
+            cd /var/www/html
+            wget https://raw.githubusercontent.com/beyzakles/my-projects/main/Project-101-kittens-carousel-static-website-ec2/static-web/index.html
+            wget https://raw.githubusercontent.com/beyzakles/my-projects/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat0.jpg
+            wget https://raw.githubusercontent.com/beyzakles/my-projects/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat1.jpg
+            wget https://raw.githubusercontent.com/beyzakles/my-projects/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat2.jpg
+            wget https://raw.githubusercontent.com/beyzakles/my-projects/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat3.png
+  
+  mysecgroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: enables ssh and http # Required
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        
